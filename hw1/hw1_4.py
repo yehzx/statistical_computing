@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import scipy.stats as st
 from scipy.linalg import cholesky
 import time
@@ -18,6 +17,7 @@ d = 2
 
 cov = [[1, 0.5], [0.5, 2]]
 
+
 def timer(iter):
     def wrap(func):
         def inner_func(*args, **kwargs):
@@ -30,7 +30,6 @@ def timer(iter):
     return wrap
 
 
-
 def build_matrix_A(n, d):
     A = np.zeros(shape=(d, d))
     for i in range(1, d):
@@ -41,7 +40,7 @@ def build_matrix_A(n, d):
     
     return A
 
-@timer(iter=1000)
+@timer(iter)
 def generate_wishart_bartlett(n, cov):
     d= np.ndim(cov)
     A = build_matrix_A(n, d)

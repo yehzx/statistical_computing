@@ -21,17 +21,21 @@ n = 1000
 a = 2
 b = 4
 
+
 def pareto(a, b, x):
     assert np.all(x > 0), "Error!"
     return b * (a**b) / ((x+a) ** (b+1))
 
+
 def inverse_function(a, b, u):
-    return ((1-u) / (a**b)) ** (-1/b) - a 
+    return ((1-u) / (a**b)) ** (-1/b) - a
+
 
 def inverse_transformation(a, b, n):
     u = np.random.uniform(0, 1, n)
-    
+
     return inverse_function(a, b, u)
+
 
 x = np.linspace(0.01, 10, 100)
 density = pareto(a, b, x)
@@ -39,7 +43,7 @@ density = pareto(a, b, x)
 # generate beta variables
 pareto_variables = inverse_transformation(a, b, n)
 
-plt.figure(figsize=(8,6))
+plt.figure(figsize=(8, 6))
 plt.rcParams.update({'font.size': 14})
 plt.xlabel("X")
 plt.ylabel("Density")

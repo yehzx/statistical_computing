@@ -14,9 +14,11 @@ np.random.seed(1000)
 r = 1
 n = 1000
 
+
 def target_function(x, r):
     assert np.all(x <= r) and np.all(x >= -r), f"x not within range!"
     return 2 / (np.pi * (r**2)) * np.sqrt(r**2 - x**2)
+
 
 def target_acceptance_rejection(r, n):
     result = []
