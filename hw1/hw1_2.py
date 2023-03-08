@@ -24,7 +24,8 @@ def target_acceptance_rejection(r, n):
     result = []
     
     # first derivative to get maximum density of the target function
-    c = 2 / np.pi / (r**2)
+    # at maximum density x = 0, so c is:
+    c = 2 / np.pi / r
 
     while len(result) < n:
         # Also use uniform distribution to cover the target distribution
