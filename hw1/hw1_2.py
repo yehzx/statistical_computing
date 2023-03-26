@@ -11,7 +11,7 @@ sample with the theoretical density superimposed.
 np.random.seed(1000)
 
 # Set r = 1
-r = 1
+r = 10
 n = 1000
 
 
