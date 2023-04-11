@@ -214,14 +214,33 @@ def stratified_sampling(n, bin):
     est_li = list(map(weight_of_g, normal_var_li))
     bin_den_norm = (1 - st.norm.cdf(1)) / bin
     est_li = np.array(est_li) * bin_den_norm
+
     stratified_cumsum = list(map(np.cumsum, est_li))
     est_li_for_conv_est = np.sum(stratified_cumsum, axis=0)
-    to_range = n/bin + 1
+    to_range = int(n/bin) + 1
     conv_est = np.divide(est_li_for_conv_est, np.arange(1, to_range))
+    
     est_li = np.mean(est_li, axis=1)
     theta_est = np.sum(est_li)
 
     return theta_est, conv_est
+
+# plot different bin numbers
+# var_li = []
+# for i in range(1, 101):
+#     est_li = []
+#     for j in range(100):
+#         est = stratified_sampling(n, i)[0]
+#         est_li.append(est)
+#     var_li.append(np.var(est_li))
+# var_li
+# plt.clf()
+# ax, fig = initial_plot()
+# plt.xlabel("Bin")
+# plt.ylabel("Variance")
+# plt.plot(np.arange(2, 101), var_li[1:], color="b")
+# var_li[49]
+# plt.show()
 
 
 # 6. tile density as importance function
@@ -247,13 +266,11 @@ def tile_importance_sampling(n, t):
     x = np.random.normal(size=n)
     x = np.abs(x) + t
 
-    density = g(x) / (2 * tile_function(x, t))
+    density = g(x - t + 1) / (2 * tile_function(x, t))
 
     theta_est = np.mean(density)
     conv_est = np.divide(np.cumsum(density), np.arange(1, n+1))
     variance = np.var(density)
-    print(theta_est)
-    print(variance)
 
     return theta_est, variance, conv_est
 
@@ -264,4 +281,4 @@ self_normalized_importance_sampling(n=n)
 integrand_0_1(n=n)
 two_control_variate(n=n)
 stratified_sampling(n=n, bin=5)
-tile_importance_sampling(n=n, t=1)
+tile_importance_sampling(n=n, t=3)
