@@ -1,9 +1,10 @@
-import numpy as np
-import scipy.stats as st
-import scipy.integrate as integrate
+import time
+
 import matplotlib.pyplot as plt
+import numpy as np
 import scienceplots
-import time 
+import scipy.integrate as integrate
+import scipy.stats as st
 
 plt.style.use("science")
 plt.rc("font", size=14)
@@ -12,6 +13,7 @@ def initial_plot():
     plt.xlabel("Iteration")
     plt.ylabel("Estimation of Integral")
     return ax, fig
+
 # set seed = 1000
 np.random.seed(1000)
 n = 10000
@@ -56,6 +58,7 @@ def cal_variance(iter, func, *args, **kwargs):
         result.append(theta_est)
         
     return np.var(result)
+
 
 def plot_convergence(label, iter=100):
     def wrap(func):
@@ -109,7 +112,7 @@ def direct_monte_carlo(n):
 def normal_dist_2(x):
     return 2 / np.sqrt(2*np.pi) * np.exp(-x**2 / 2)
 
-def normalize_exp(x):
+def normalized_exp(x):
     return np.exp(-x)
 
 def normal_dist(x):
@@ -131,7 +134,7 @@ def importance_sampling(n):
 @plot_convergence(label="2_2_SNIS", iter=100)
 def self_normalized_importance_sampling(n):
     x = np.random.exponential(size=n) + 1
-    w = normal_dist(x) / normalize_exp(x-1)
+    w = normal_dist(x) / normalized_exp(x-1)
     density = x**2 * w
     theta_est = np.mean(density) / np.mean(w) * (1 - st.norm.cdf(1))
     variance = np.var(density)
