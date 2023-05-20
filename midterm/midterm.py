@@ -102,6 +102,10 @@ def direct_monte_carlo(n):
     normal_var = np.random.normal(size=n)
     est_li = weight_of_g_filter(normal_var)
     theta_est = np.mean(est_li)
+
+    # this is the variance within each estimation
+    # true variance for multiple estimations is obtained from 100 iters (not shown here)
+    # all "variance" of each method below has the same implication.
     variance = np.var(est_li)
     conv_est = np.divide(np.cumsum(est_li), np.arange(1, n+1))
 
