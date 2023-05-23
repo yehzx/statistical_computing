@@ -43,9 +43,6 @@ def run_gibbs_sampling_and_convergence_test():
         i, many_results) for i in range(burnin, sample_num + 1)])
     plot_gr_method(gelman_rubin_statistic_li)
 
-    # legacy code
-    # gelman_rubin_statistic_li = np.array([gelman_rubin_method(i, many_results) for i in range(2, sample_num - burnin + 1)])
-
 
 def gibbs_sampler():
     x = x0
@@ -126,16 +123,13 @@ def plot_gr_method(gelman_rubin_li):
     plt.figure(figsize=(8, 8))
     plt.rcParams.update({'font.size': 14})
     x = np.arange(sample_num - burnin + 1)
-    # x = np.arange(2, sample_num + 1)
-    # plt.plot(x, gelman_rubin_li[98:, 0], "b", label="R for X")
     plt.plot(x, gelman_rubin_li[:, 0], "b", label="R for X")
-    # plt.plot(x, gelman_rubin_li[98:, 1], "seagreen", label="R for Y")
     plt.plot(x, gelman_rubin_li[:, 1], "seagreen", label="R for Y")
-    # plt.ylim(0.5, 4)
     plt.xlabel("Iteration")
     plt.ylabel("R")
     plt.hlines(xmin=0, xmax=(sample_num - burnin), y=1.1,
                linestyles="dashdot", colors="black")
+    plt.legend()
     plt.title("Convergence Plot by Using the Gelman-Rubin Method")
     plt.show()
 

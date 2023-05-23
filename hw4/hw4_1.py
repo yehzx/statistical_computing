@@ -52,10 +52,8 @@ def determine_accept_or_not(this_sample, last_sample):
                             * cal_gamma_density(last_sample, this_sample)
                             / cal_rayleigh_density(last_sample)
                             / cal_gamma_density(this_sample, last_sample)])
-    if threshold <= accpeted_prob:
-        return True
-    else:
-        return False
+
+    return True if threshold <= accpeted_prob else False
 
 
 def cal_rayleigh_density(x):
