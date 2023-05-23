@@ -14,9 +14,11 @@ b = 7
 n = 30
 x0 = 10
 
-sample_num = 500
-# convergence is achieved quickly in this example, so set burnin to 10 only
-burnin = 10
+sample_num = 600
+burnin = 100
+# convergence is achieved quickly in this example, so set the mininum number for
+# averaging across samples to 10 only 
+min_num_for_averaging = 10
 
 # generate 5 chains
 k = 5
@@ -27,20 +29,16 @@ np.random.seed(1000)
 def run_gibbs_sampling_and_convergence_test():
     many_results = []
 
-    # discard burnin
-    # for i in range(k):
-    #     many_results.append(gibbs_sampler()[burnin:])
-
-    # keep burnin
+    # discard first 100 samples
     for i in range(k):
-        many_results.append(gibbs_sampler())
+        many_results.append(gibbs_sampler()[burnin:])
 
     # plot only the first chain
     plot_results(many_results[0])
 
-    # calculate gr statistic from at least #burnin samples
+    # calculate gr statistic from at least #min_num_for_averaging samples
     gelman_rubin_statistic_li = np.array([gelman_rubin_method(
-        i, many_results) for i in range(burnin, sample_num + 1)])
+        i, many_results) for i in range(min_num_for_averaging, sample_num + 1)])
     plot_gr_method(gelman_rubin_statistic_li)
 
 
@@ -122,12 +120,12 @@ def plot_results(results):
 def plot_gr_method(gelman_rubin_li):
     plt.figure(figsize=(8, 8))
     plt.rcParams.update({'font.size': 14})
-    x = np.arange(sample_num - burnin + 1)
+    x = np.arange(sample_num - min_num_for_averaging + 1)
     plt.plot(x, gelman_rubin_li[:, 0], "b", label="R for X")
     plt.plot(x, gelman_rubin_li[:, 1], "seagreen", label="R for Y")
     plt.xlabel("Iteration")
     plt.ylabel("R")
-    plt.hlines(xmin=0, xmax=(sample_num - burnin), y=1.1,
+    plt.hlines(xmin=0, xmax=(sample_num - min_num_for_averaging), y=1.1,
                linestyles="dashdot", colors="black")
     plt.legend()
     plt.title("Convergence Plot by Using the Gelman-Rubin Method")
