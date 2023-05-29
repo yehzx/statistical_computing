@@ -5,6 +5,7 @@ import numpy as np
 import scipy.stats as st
 from pandas import read_csv
 from scipy.special import gamma
+from tqdm import tqdm
 
 import os
 os.chdir(os.path.dirname(__file__))
@@ -162,8 +163,8 @@ class BirthWeightData():
         self.method = method
 
         # hyperparam
-        # BirthWeightData.a_tau = 2
-        BirthWeightData.b_tau = 1
+        BirthWeightData.a_tau = 1
+        BirthWeightData.b_tau = 2
         BirthWeightData.b_sigma = 1
         BirthWeightData.c_tau_max = Distribution.cal_trun_cauchy_density(0, self.b_tau)
         BirthWeightData.c_sigma_max = Distribution.cal_trun_cauchy_density(0, self.b_sigma)
@@ -176,7 +177,7 @@ class BirthWeightData():
         with open(BIRTHWEIGHT_DATA_PATH) as f:
             data = read_csv(f)
         BirthWeightData.y = data["weight"]
-        BirthWeightData.mu1 = np.mean(data[data["gender"] == 1]["weight"])
+        BirthWeightData.mu1 = np.mean(data[data["gender"] == 0]["weight"])
         BirthWeightData.mu2 = np.mean(data[data["gender"] == 1]["weight"])
         BirthWeightData.eta = (self.mu1 + self.mu2) / 2
         BirthWeightData.tau_2 = np.var([self.mu1, self.mu2])
@@ -196,12 +197,12 @@ class BirthWeightData():
         self.tau_2_li = [self.tau_2]
     
     def start_gibbs_sampling(self):
-        for i in range(self.sample_size):
+        for i in tqdm(range(self.sample_size)):
             self.mu1 = self.generate_mu("mu1")
             self.mu2 = self.generate_mu("mu2")
             self.eta = self.generate_eta()
             self.sigma_2 = self.generate_sigma_2()
-            self.tau_2 = self.generate_tau_2()
+            self.tau_2 = self.generate_tau_2_v2()
             self.track_param()
             self.y = self.generate_y()
             self.track_data()
@@ -241,10 +242,10 @@ class BirthWeightData():
         else:
             raise Exception("Invalid sampler name")
         
-        return float(sample_li)
+        return float(sample_li[0])
 
     def generate_tau_2(self):
-        BirthWeightData.scale_tau = ((self.mu1-self.eta)**2 + (self.mu2-self.eta)**2) / 2
+        BirthWeightData.scale_tau = ((self.mu1-self.eta)**2 + (self.mu2-self.eta)**2) / 2 + self.b_tau
 
         if self.method == "acceptance-rejection":
             sample_li = Sampler.acceptance_rejection_sampler(
@@ -258,7 +259,12 @@ class BirthWeightData():
         else:
             raise Exception("Invalid sampler name")
 
-        return float(sample_li)
+        return float(sample_li[0])
+    
+    def generate_tau_2_v2(self):
+        scale_tau = ((self.mu1-self.eta)**2 + (self.mu2-self.eta)**2) / 2 + self.b_tau
+        
+        return Distribution.generate_inverse_gamma(self.a_tau + 1, scale_tau)
 
     def track_param(self):
         self.mu1_li.append(self.mu1)
@@ -268,8 +274,8 @@ class BirthWeightData():
         self.tau_2_li.append(self.tau_2)
 
     def generate_y(self):
-        group1_y = np.random.normal(self.mu1, self.sigma_2, size=self.ni)
-        group2_y = np.random.normal(self.mu2, self.sigma_2, size=self.ni)
+        group1_y = np.random.normal(self.mu1, np.sqrt(self.sigma_2), size=self.ni)
+        group2_y = np.random.normal(self.mu2, np.sqrt(self.sigma_2), size=self.ni)
         
         return np.concatenate((group1_y, group2_y))
 
@@ -291,8 +297,8 @@ class BirthWeightData():
 
 
 ar_result = BirthWeightData(sample_size=50, method="acceptance-rejection")
-imh_result = BirthWeightData(sample_size=50, method="independent metropolis-hastings")
-mh_result = BirthWeightData(sample_size=50, method="metropolis-hastings")
+# imh_result = BirthWeightData(sample_size=50, method="independent metropolis-hastings")
+# mh_result = BirthWeightData(sample_size=50, method="metropolis-hastings")
 
 
 # x = np.linspace(0, 4, 100)
